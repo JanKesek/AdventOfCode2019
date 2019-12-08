@@ -25,7 +25,7 @@ public class AmpMain {
     }
     public static void main(String[] args) {
         try {
-            File file = new File("C:\\Users\\chewb\\Downloads\\IntelIJ-Projects\\AdventOfCode3\\src\\day7\\input.txt");
+            File file = new File("C:\\Users\\chewb\\Downloads\\IntelIJ-Projects\\AdventOfCode3\\AdventOfCode2019\\src\\day7\\input.txt");
             Scanner in = new Scanner(file).useLocale(Locale.US);
             final ArrayList<Integer> registers=new ArrayList<Integer>();
             in.useDelimiter(",");
@@ -39,14 +39,14 @@ public class AmpMain {
             int maxOutput = 0;
             for (String s : perms) {
                 int[] combArr = Arrays.stream(s.split("")).mapToInt(Integer::parseInt).toArray();
-                for(int i=0;i<5;i++) System.out.println(combArr[i]);
+                //for(int i=0;i<5;i++) System.out.println(combArr[i]);
                 int input = 0;
                 for (int i = 0; i < 5; i++) {
                     //System.out.println(combArr[i]);
                     Amplifier amp = new Amplifier(input, combArr[i], registers);
                     amp.runProgram();
                     input = amp.getOutput();
-                    System.out.println(input);
+                    //System.out.println(input);
                 }
                 if (input >= maxOutput) maxOutput = input;
             }
