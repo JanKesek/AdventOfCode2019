@@ -25,7 +25,7 @@ public class Amplifier extends Computer {
         this.index+=2;
     }
     public void output(int mode1) {
-       // System.out.println("OUTPUT: " + getByMode(mode1,this.index));
+        //System.out.println("OUTPUT: " + getByMode(mode1,this.index));
         this.output=getByMode(mode1, this.index+1);
         this.index+=2;
         //while (this.registers.get(this.index)!=99 || this.index<this.registers.size()-1) this.index+=1;

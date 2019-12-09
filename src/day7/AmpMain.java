@@ -27,12 +27,17 @@ public class AmpMain {
         try {
             File file = new File("C:\\Users\\chewb\\Downloads\\IntelIJ-Projects\\AdventOfCode3\\AdventOfCode2019\\src\\day7\\input.txt");
             Scanner in = new Scanner(file).useLocale(Locale.US);
-            final ArrayList<Integer> registers=new ArrayList<Integer>();
+            //final ArrayList<Integer> registers=new ArrayList<Integer>();
+            final ArrayList<Integer> registers=new ArrayList<>(Arrays.asList(3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,
+                    27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5));
             in.useDelimiter(",");
             while (in.hasNext()) {
                 registers.add(in.nextInt());
             }
-            List<String> perms = permutation("01234");
+            //Part 1 signals:
+            //List<String> perms = permutation("01234");
+            //Part 2 signals:
+            List<String> perms = permutation("56789");
             perms.removeAll(Collections.singleton(""));
             System.out.println(perms.size());
             ArrayList<int[]> combinations = new ArrayList<int[]>();
@@ -41,12 +46,17 @@ public class AmpMain {
                 int[] combArr = Arrays.stream(s.split("")).mapToInt(Integer::parseInt).toArray();
                 //for(int i=0;i<5;i++) System.out.println(combArr[i]);
                 int input = 0;
-                for (int i = 0; i < 5; i++) {
-                    //System.out.println(combArr[i]);
-                    Amplifier amp = new Amplifier(input, combArr[i], registers);
-                    amp.runProgram();
-                    input = amp.getOutput();
-                    //System.out.println(input);
+                int j=0;
+                while (j<10) {
+                    for (int i = 0; i < 5; i++) {
+                        //System.out.println(combArr[i]);
+                        Amplifier amp = new Amplifier(input, combArr[i], registers);
+                        amp.runProgram();
+                        input = amp.getOutput();
+                        //System.out.println(input);
+                    }
+                    j++;
+                    System.out.println(j);
                 }
                 if (input >= maxOutput) maxOutput = input;
             }

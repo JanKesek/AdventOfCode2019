@@ -8,8 +8,9 @@ import java.util.Scanner;
 public class Computer {
     protected ArrayList<Integer> registers;
     protected int index=0;
+    protected int relativeBase=0;
     public Computer() { super(); }
-    Computer(ArrayList<Integer> registersIn) {
+    public Computer(ArrayList<Integer> registersIn) {
         registers=registersIn;
     }
     public ArrayList<Integer> parseParameters(ArrayList<Integer> instructions, String parameters) {
@@ -20,7 +21,7 @@ public class Computer {
     public void runProgram() {
         Integer[] tmpArr = new Integer[]{new Integer(0),new Integer(0),new Integer(0)};
         while (index<=registers.size() && registers.get(index)!=99) {
-            //System.out.println(index + " : " + registers.get(index));
+            System.out.println(index + " : " + registers.get(index));
             if(registers.get(index)>=100) {
                 String parameters=Integer.toString(registers.get(index));
                 ArrayList<Integer> instructions=new ArrayList<Integer>();
@@ -42,6 +43,11 @@ public class Computer {
         if(opcode==6) jump(instructions.get(0), instructions.get(1),0);
         if(opcode==7) lessThan(instructions.get(0), instructions.get(1), instructions.get(2));
         if(opcode==8) equalsTo(instructions.get(0), instructions.get(1), instructions.get(2));
+        if(opcode==9) adjustRelativeBase(instructions.get(0));
+    }
+    public void adjustRelativeBase(int mode1) {
+        relativeBase+=getByMode(mode1, index+1);
+        index+=2;
     }
     public void jump(int mode1, int mode2, int ifTrue) {
         int tmpIndex=index;
@@ -55,13 +61,13 @@ public class Computer {
         else index+=3;
     }
     public void lessThan(int mode1, int mode2, int mode3) {
-        System.out.println("USED MODE: " + mode3);
+        //System.out.println("USED MODE: " + mode3);
         if(getByMode(mode1, index+1)<getByMode(mode2, index+2)) registers.set(getByMode(1, index+3), 1);
         else registers.set(registers.get(index+3), 0);
         index+=4;
     }
     public void equalsTo(int mode1, int mode2, int mode3) {
-        System.out.println("USED MODE: " + mode3);
+        //System.out.println("USED MODE: " + mode3);
         if(getByMode(mode1, index+1)==getByMode(mode2, index+2)) registers.set(getByMode(1, index+3), 1);
         else registers.set(registers.get(index+3), 0);
         index+=4;
@@ -76,18 +82,48 @@ public class Computer {
     public void output(int mode1) {
         //System.out.println(registers.get(registers.get(index+1)));
         System.out.println(getByMode(mode1, index+1));
+        System.out.println(index+2 + " : " + registers.get(index+2));
         index+=2;
     }
     public void add(int mode1, int mode2, int mode3) {
-        registers.set(registers.get(index+3), getByMode(mode1, index+1)+getByMode(mode2, index+2));
+        registers.set(getByMode(1, index+3), getByMode(mode1, index+1)+getByMode(mode2, index+2));
         index+=4;
     }
     public void multiply(int mode1, int mode2, int mode3) {
-        registers.set(registers.get(index+3), getByMode(mode1, index+1)*getByMode(mode2,index+2));
+        int n1=getByMode(mode1, index+1);
+        int n2=getByMode(mode2, index+2);
+        System.out.println(n1 + " * " + n2 + " = " + n1*n2);
+        registers.set(registers.get(index+3), n1*n2);
         index+=4;
     }
     public int getByMode(int mode, int i) {
+        checkMemory(mode,i);
+        mode=checkIfNegative(i,mode);
         if(mode==0) return registers.get(registers.get(i));
-        else return registers.get(i);
+        else if(mode==1) return registers.get(i);
+        else return registers.get(registers.get(i)+relativeBase);
+    }
+    public int checkIfNegative(int i, int mode) {
+        if (mode==2) {
+            if((registers.get(i)+relativeBase)<0) mode=1;
+        }
+        else {
+            if(registers.get(i)<0) mode=1;
+        }
+        return mode;
+    }
+    public void checkMemory(int mode, int i) {
+        if(mode==0) {
+            if (registers.get(i)>=registers.size()) extendMemory(registers.get(i));
+        }
+        if(mode==1) {
+            if (i>=registers.size()) extendMemory(i);
+        }
+        else {
+            if((registers.get(i)+relativeBase)>=registers.size()) extendMemory(registers.get(i)+relativeBase);
+        }
+    }
+    public void extendMemory(int i) {
+        while (i>=registers.size()) registers.add(0);
     }
 }
