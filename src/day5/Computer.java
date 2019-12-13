@@ -1,12 +1,10 @@
 package day5;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Computer {
     protected ArrayList<Integer> registers;
+    HashMap<Integer, Long> longValues=new HashMap<>();
     protected int index=0;
     protected int relativeBase=0;
     public Computer() { super(); }
@@ -82,18 +80,35 @@ public class Computer {
     public void output(int mode1) {
         //System.out.println(registers.get(registers.get(index+1)));
         System.out.println(getByMode(mode1, index+1));
-        System.out.println(index+2 + " : " + registers.get(index+2));
+        System.out.println("PRINTING LONGS");
+        for(int i : longValues.keySet()) System.out.println(longValues.get(i));
+        if(longValues.containsKey(index+1)) System.out.println("LONG VALUE: " + longValues.get(index+1));
         index+=2;
     }
+    public int checkIfOverflow(int a, int b, char operation) {
+        Long c=0L;
+        if(operation=='+') c = (long)a+(long)b;
+        else c=(long)a*(long)b;
+        System.out.println("WARTOSC" + c);
+        if (c > Integer.MAX_VALUE || c < Integer.MIN_VALUE) {
+            System.out.println("ZA DUZA: " + c + " do indeksu: " + (index+3));
+            longValues.put(index+3, c);
+            return c.intValue();
+        }
+        else return c.intValue();
+    }
     public void add(int mode1, int mode2, int mode3) {
-        registers.set(getByMode(1, index+3), getByMode(mode1, index+1)+getByMode(mode2, index+2));
+        int n=checkIfOverflow(getByMode(mode1,index+1),getByMode(mode2, index+2),'+');
+        registers.set(getByMode(1, index+3), n);
         index+=4;
     }
     public void multiply(int mode1, int mode2, int mode3) {
         int n1=getByMode(mode1, index+1);
         int n2=getByMode(mode2, index+2);
-        System.out.println(n1 + " * " + n2 + " = " + n1*n2);
-        registers.set(registers.get(index+3), n1*n2);
+        int n3=checkIfOverflow(n1,n2,'*');
+        System.out.println("CASTING TO INT: " + n3);
+        System.out.println(n1 + " * " + n2 + " = " + n3);
+        registers.set(registers.get(index+3), n3);
         index+=4;
     }
     public int getByMode(int mode, int i) {
